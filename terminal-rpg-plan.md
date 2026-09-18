@@ -203,13 +203,19 @@ $ rpg status
 
 # 5. XP System
 
-Commands and events award XP.
+Two XP tracks:
 
-Initial examples:
+-   **Command XP** — every successful command pays a small flat amount
+    (e.g. 5 XP). Deliberately tiny: farming `ls` 100 times is 500 XP,
+    less than one good achievement.
+-   **Event XP** — meaningful events (commits, builds, achievements)
+    pay the real XP.
+
+Initial examples (defaults -- every value is configurable):
 
   Event                                  XP
   -------------------------- --------------
-  Successful shell command     small amount
+  Basic successful command                5
   Git commit                             15
   Git push                               20
   Docker build                           20
@@ -217,9 +223,10 @@ Initial examples:
   Successful test suite                  25
   Creating a script                      15
   Fixing a failed build                  50
-  Major achievement                50--1000
+  Achievement tier                       20--500, scales with level
 
-Avoid rewarding every command equally.
+Command XP is flat and capped at a trickle, so spamming commands is
+never a real farming strategy -- the interesting XP comes from events.
 
 The system should eventually detect meaningful events rather than simply
 farming XP by typing:
@@ -388,7 +395,29 @@ shell integration.
 
 Achievements should be persistent and event-based.
 
-Examples:
+### Tiers
+
+Achievements have levels instead of being one-shot unlocks:
+
+``` text
+🐺 Git Gud              Level 3 / 5
+   Lv 1: 10 git commits        +20 XP
+   Lv 2: 50 git commits        +50 XP
+   Lv 3: 200 git commits      +120 XP
+   Lv 4: 500 git commits      +250 XP
+```
+
+Each tier needs more than the last. Tier XP scales with the player's
+current level -- early game a tier pays ~20 XP, late game up to 500+.
+
+The engine only implements the logic. Tier names, threshold counts,
+XP values, how many tiers an achievement has, and the achievement list
+itself are all data, defined in `data/achievements.toml` and user-
+editable. The examples below are just defaults:
+
+Good tier candidates: "Git Gud" (git events), "Container Tamer"
+(docker), "Night Owl" (late-night terminal use), "Keyboard Warrior"
+(total commands).
 
 ### First Blood
 
@@ -397,7 +426,7 @@ Make your first Git commit.
 Reward:
 
 ``` text
-+50 XP
++20--100 XP (default; scales with player level, value configurable)
 ```
 
 ### Container Tamer
@@ -666,6 +695,11 @@ track_shell_commands = true
 
 Allow users to disable specific event categories.
 
+Achievement definitions (names, requirements, tiers, rewards, XP
+values) stay in `data/achievements.toml`, not in code. The engine
+implements generic logic: match event counters against config-defined
+thresholds, award config-defined rewards.
+
 ------------------------------------------------------------------------
 
 # 19. Privacy / Safety Design
@@ -915,7 +949,7 @@ You learned a new tool → achievement
 Bad:
 
 ``` text
-Run `ls` 100 times → XP
+Run `ls` 100 times → 500 XP trickle (command XP stays tiny)
 Delete a file → XP
 Run random commands → XP
 Keep terminal open for 14 hours → massive XP
