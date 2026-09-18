@@ -11,3 +11,4 @@
 - Keep changes minimal and focused. No drive-by refactors, no unrequested abstractions.
 - Run `cargo check` (or `cargo test`) after changes and report the result.
 - Keep code and commit messages written in normal, readable English.
+- Update relevant docs (e.g. `docs/terminal-rpg-plan.md`) for major decisions and design changes. Skip docs for minor changes. All docs live in `docs/`.
