@@ -64,10 +64,10 @@ pub fn add_xp(p: &mut Player, amount: u64) {
         p.level += 1;
         leveled = true;
     }
-    println!("+{} XP", amount);
+    println!("\x1b[32m+{} XP\x1b[0m", amount);
     if leveled {
         println!();
-        println!(" ✨ LEVEL UP!");
+        println!("\x1b[1;33mLEVEL UP!\x1b[0m");
         println!();
         println!("You are now level {}!", p.level);
     }

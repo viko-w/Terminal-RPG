@@ -1,29 +1,49 @@
 use crate::player::{xp_needed, Player, SKILLS};
 
-fn center(s: &str, w: usize) -> String {
-    let pad = w.saturating_sub(s.chars().count());
-    let left = pad / 2;
-    format!("{}{}{}", " ".repeat(left), s, " ".repeat(pad - left))
+const RESET: &str = "\x1b[0m";
+const CYAN: &str = "\x1b[36m";
+const GREEN: &str = "\x1b[32m";
+const YELLOW: &str = "\x1b[1;33m";
+
+fn paint(code: &str, s: &str) -> String {
+    format!("{code}{s}{RESET}")
+}
+
+fn row(label: &str, value: &str, val_color: &str) {
+    let l = format!("{label:<10}");
+    let v = format!("{value:>24}");
+    println!(
+        "{}{}{}{}",
+        paint(CYAN, "║"),
+        paint(CYAN, &l),
+        paint(val_color, &v),
+        paint(CYAN, "║")
+    );
 }
 
 pub fn cmd_status(p: &Player) {
-    const W: usize = 34;
-    println!("╔{}╗", "═".repeat(W));
-    println!("║{}║", center("TERMINAL HERO", W));
-    println!("╠{}╣", "═".repeat(W));
-    println!("║{:<W$}║", format!("Level     {}", p.level));
+    const WDTH: usize = 34;
+    println!("{}", paint(CYAN, &format!("╔{}╗", "═".repeat(WDTH))));
+    let pad = (WDTH - "TERMINAL HERO".chars().count()) / 2;
     println!(
-        "║{:<W$}║",
-        format!("XP        {} / {}", p.xp, xp_needed(p.level))
+        "{}{}{}{}{}",
+        paint(CYAN, "║"),
+        " ".repeat(pad),
+        paint(YELLOW, "TERMINAL HERO"),
+        " ".repeat(WDTH - pad - "TERMINAL HERO".chars().count()),
+        paint(CYAN, "║")
     );
-    println!("║{:<W$}║", format!("Total XP  {}", p.total_xp));
-    println!("║{:<W$}║", "");
-    let emoji: [&str; 8] = ["⚔", "🌿", "🐳", "🐧", "💻", "🔗", "🖥", "🔧"];
-    for (i, skill) in SKILLS.iter().enumerate() {
-        println!(
-            "║{:<W$}║",
-            format!("{} {} {}", emoji[i], skill, p.skills.get(*skill).unwrap_or(&0))
-        );
+    println!("{}", paint(CYAN, &format!("╠{}╣", "═".repeat(WDTH))));
+    row("Level", &p.level.to_string(), GREEN);
+    row(
+        "XP",
+        &format!("{} / {}", p.xp, xp_needed(p.level)),
+        GREEN,
+    );
+    row("Total XP", &p.total_xp.to_string(), GREEN);
+    row("", "", GREEN);
+    for skill in SKILLS {
+        row(skill, &p.skills.get(skill).unwrap_or(&0).to_string(), GREEN);
     }
-    println!("╚{}╝", "═".repeat(W));
+    println!("{}", paint(CYAN, &format!("╚{}╝", "═".repeat(WDTH))));
 }
