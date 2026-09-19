@@ -1,0 +1,34 @@
+# terminal-rpg command XP config (repo file)
+#
+# Each table is one command: the table name is the command, and the
+# longest configured command that prefixes what you ran wins.
+#
+#   rpg cmd git status         -> matches "git"          (10 XP)
+#   rpg cmd git push origin x  -> matches "git push"     (20 XP, not "git")
+#
+# Commands listed here are matched against subcommands: "git" also
+# counts for "git commit", "git stash", etc. A more specific entry
+# always wins over a shorter one.
+#
+# Commands that match nothing award 5 XP + Command skill (code default).
+# skills is optional; omit it to award XP with no skill point.
+
+["git"]
+xp = 10
+skills = ["Git"]
+
+["git commit"]
+xp = 15
+skills = ["Git"]
+
+["git push"]
+xp = 20
+skills = ["Git"]
+
+["docker build"]
+xp = 20
+skills = ["Docker", "DevOps"]
+
+["docker compose up"]
+xp = 25
+skills = ["Docker", "DevOps"]
